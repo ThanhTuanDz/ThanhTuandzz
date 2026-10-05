@@ -1,9 +1,10 @@
 // ==UserScript==
-// @name         THANH TUAN AUTO GTRAFFIC.IO v49.0.0 - KITTY ULTIMATE
+// @name         THANH TUAN AUTO GTRAFFIC.IO v49.2.0 - KITTY ULTIMATE
 // @namespace    thanhtuan.gtraffic
-// @version      49.0.0-kitty-ultimate
-// @description  Auto gtraffic + dichvutask + robuxreward + OCR + CF + GIF + TIMER ĐẸP + MENU CHUYỂN ĐỘNG
+// @version      49.2.0-kitty-ultimate
+// @description  Auto gtraffic + dichvutask + robuxreward + OCR + CF + GIF MỚI + TIMER ĐẸP + MENU CHUYỂN ĐỘNG
 // @author       THANH TUẤN
+// @icon         https://files.catbox.moe/l4a7vq.png
 // @match        *://*/*
 // @grant        GM_setValue
 // @grant        GM_getValue
@@ -19,11 +20,15 @@
     var CFG = { poll: 8, googlePoll: 0, targetPoll: 6, gk: 'mpgt_', watchdogMs: 3000, defaultCountdown: 60, codeTimeoutMs: 45000, navCooldownMs: 800, fillRetryMax: 999, fillRetryDelay: 300, backDelay: 200, leaveCheckMs: 200, fillLoopMax: 999, fillLoopDelay: 100, fillHoldVerifyMs: 550, fillVerifyIntervalMs: 40, maxEmptyBeforeNop: 5, nativePasteDelayMin: 8, nativePasteDelayMax: 25, postSubmitCheckMs: 320, postSubmitCheckMax: 12, minCodeScore: 130, maxCodeScanDistance: 99999, getLinkPollMs: 0, getLinkTimeoutMs: 15000, minWaitBeforeSearchMs: 0, codeBackupTTL: 600000, dichvuTaskPoll: 1000, dichvuClickCooldownMs: 7000, dichvuCreatedUrlsTTL: 86400000, dichvuOutsideCooldownMs: 4000, autoFillDelayMs: 800, ocrDelayMs: 500, ocrTimeoutMs: 25000, waitCountdownMaxMs: 90000, scanBtnMaxMs: 12000, apiRetryInterval: 5000, gBtnDelayMs: 3000, robuxPollMs: 1500, robuxCooldownMs: 15000, robuxModalDelayMs: 15000, dichvuTaskPath: '/client/vuot-link' };
     var STATE = { IDLE: 'idle', GOOGLE_SEARCH: 'google-search', GOOGLE_CLICK: 'google-click', SCAN_BTN: 'scan-btn', WAIT_COUNTDOWN: 'wait-countdown', GET_CODE: 'get-code', BACK_GTRAFFIC: 'back-gtraffic', FILL_CODE: 'fill-code', DONE: 'done', DICHVU_TASK: 'dichvu-task', ROBUX_TASK: 'robux-task', ROBUX_CLAIM: 'robux-claim' };
 
-    // ★★★ HELLO KITTY GIFS (nhiều nguồn dự phòng) ★★★
-    var GIF_CLOSE = 'https://media2.giphy.com/media/v1.Y2lkPTZjMDliOTUyeHc0eGdsb29pMG96Nzc3d2o2bG1kY2FnMzVtbnZ5eWp3bXNpODN4cCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/kZqbBT64ECtjy/giphy.gif';
-    var GIF_BOW = 'https://media.giphy.com/media/3o7TKtnuHOHHUjR38Y/giphy.gif';
-    var GIF_KITTY_DANCE = 'https://media.giphy.com/media/3o7TKtnuHOHHUjR38Y/giphy.gif';
-    var GIF_KITTY_DANCE_ALT = 'https://media2.giphy.com/media/v1.Y2lkPTZjMDliOTUyeHc0eGdsb29pMG96Nzc3d2o2bG1kY2FnMzVtbnZ5eWp3bXNpODN4cCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/kZqbBT64ECtjy/giphy.gif';
+    // ★★★ TÀI NGUYÊN ★★★
+    var LOGO_URL = 'https://files.catbox.moe/l4a7vq.png';
+    var GIF_MAIN = 'https://media4.giphy.com/media/v1.Y2lkPTZjMDliOTUyNDdqYng5aWJtd296bTVsYjlpdnVlczk2M2M1NmZkcGhobTFndWx3aiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/8DTnuPhxv0m4w/giphy.gif';
+    var GIF_MAIN_FALLBACK = 'https://media.giphy.com/media/3o7TKtnuHOHHUjR38Y/giphy.gif';
+
+    var GIF_CLOSE = GIF_MAIN;
+    var GIF_BOW = GIF_MAIN;
+    var GIF_KITTY_DANCE = GIF_MAIN;
+    var GIF_KITTY_DANCE_ALT = GIF_MAIN_FALLBACK;
     var GIF_KITTY_DANCE_ALT2 = 'https://media.giphy.com/media/l0HlMW1sAKmFB8FWw/giphy.gif';
 
     var __origWindowOpen = window.open, __openBlockKey = '__tt_open_blocked_' + location.href.split('?')[0].split('#')[0], __openCount = 0;
@@ -194,7 +199,7 @@
         ov.id = 'tt-gif-overlay';
         var img = document.createElement('img');
         img.src = customGif || GIF_CLOSE;
-        img.onerror = function() { ov.innerHTML = '<div style="font-size:140px;animation:ttKittyFloat 1.5s infinite">🐱🎀</div>'; };
+        img.onerror = function() { img.src = GIF_KITTY_DANCE_ALT; };
         ov.appendChild(img);
         document.body.appendChild(ov);
         setTimeout(function(){ if (ov.parentNode) ov.remove(); }, ms || 2500);
@@ -402,7 +407,6 @@
 // >>> TIẾP TỤC Ở PHẦN 2/2 <<<    // ===== HELLO KITTY CSS - NÂNG CẤP TOÀN DIỆN =====
     function buildCSS() {
         return [
-        // ★ ANIMATIONS ĐA DẠNG
         '@keyframes ttKittyFloat{0%,100%{transform:translateY(0) rotate(-3deg) scale(1)}50%{transform:translateY(-5px) rotate(3deg) scale(1.08)}}',
         '@keyframes ttKittyDance{0%,100%{transform:translateY(0) rotate(-6deg) scale(1)}25%{transform:translateY(-6px) rotate(4deg) scale(1.08)}50%{transform:translateY(0) rotate(6deg) scale(1)}75%{transform:translateY(-6px) rotate(-4deg) scale(1.08)}}',
         '@keyframes ttKittyPulse{0%,100%{box-shadow:0 0 0 0 rgba(233,30,99,.5)}50%{box-shadow:0 0 0 10px rgba(233,30,99,0)}}',
@@ -417,31 +421,25 @@
         '@keyframes ttHeaderFlow{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}',
         '@keyframes ttSectionFadeIn{0%{opacity:0;transform:translateY(6px)}100%{opacity:1;transform:translateY(0)}}',
 
-        // ★ ROOT PANEL
         '#tt-root{position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:2147483647;width:360px;max-width:calc(100vw - 16px);font-family:"Comic Sans MS","Segoe UI",Arial,sans-serif;font-size:10px;color:#AD1457;background:linear-gradient(165deg,#FFF0F5 0%,#FCE4EC 45%,#F8BBD0 100%);border-radius:20px;user-select:none;max-height:88vh;overflow:visible;display:flex;flex-direction:column;box-shadow:0 6px 22px rgba(233,30,99,.35),0 0 0 2px rgba(255,255,255,.9) inset;border:2.5px solid #F48FB1}',
-
-        // ★ GIF NƠ Ở 2 GÓC
         '#tt-root::before{content:"";position:absolute;top:-22px;left:8px;width:48px;height:48px;background-image:url("' + GIF_BOW + '");background-size:contain;background-repeat:no-repeat;background-position:center;z-index:11;pointer-events:none;animation:ttGifWiggle 1.8s ease-in-out infinite;filter:drop-shadow(0 3px 6px rgba(233,30,99,.55))}',
         '#tt-root::after{content:"";position:absolute;top:-22px;right:8px;width:48px;height:48px;background-image:url("' + GIF_BOW + '");background-size:contain;background-repeat:no-repeat;background-position:center;z-index:11;pointer-events:none;animation:ttGifWiggle 1.8s ease-in-out infinite .4s;filter:drop-shadow(0 3px 6px rgba(233,30,99,.55))}',
         '#tt-root *{box-sizing:border-box}',
 
-        // ★ MINIMIZE STATE
         '#tt-root.tt-min{width:64px !important;max-width:64px !important;border-radius:50% !important;top:8px;left:auto;right:8px;transform:none;padding:0;background:radial-gradient(circle at 30% 30%,#FFD9E8,#FF69B4 70%);border:3px solid #FFF;animation:ttKittyPulse 2s infinite;overflow:hidden}',
         '#tt-root.tt-min::before,#tt-root.tt-min::after{display:none}',
         '#tt-root.tt-min .tt-head{padding:12px 0;text-align:center;border-radius:50%;background:transparent;border:none}',
         '#tt-root.tt-min .tt-brand-txt,#tt-root.tt-min .tt-body,#tt-root.tt-min .tt-foot,#tt-root.tt-min .tt-head-actions{display:none}',
-        '#tt-root.tt-min .tt-rose{font-size:0 !important;margin:0 auto !important;width:52px;height:52px;display:block;background-image:url("' + GIF_KITTY_DANCE + '"),url("' + GIF_KITTY_DANCE_ALT + '"),url("' + GIF_KITTY_DANCE_ALT2 + '");background-size:contain;background-repeat:no-repeat;background-position:center;border-radius:50%;animation:ttKittyDance 0.6s ease-in-out infinite}',
+        '#tt-root.tt-min .tt-rose{font-size:0 !important;margin:0 auto !important;width:52px;height:52px;display:block;background-image:url("' + LOGO_URL + '");background-size:contain;background-repeat:no-repeat;background-position:center;border-radius:50%;animation:ttKittyDance 0.6s ease-in-out infinite}',
 
-        // ★ HEADER - gradient chuyển động
         '.tt-head{padding:12px 14px;background:linear-gradient(135deg,#E91E63 0%,#D81B60 25%,#F48FB1 50%,#D81B60 75%,#E91E63 100%);background-size:200% 200%;flex-shrink:0;position:relative;overflow:hidden;border-radius:17px 17px 0 0;animation:ttHeaderFlow 5s ease-in-out infinite}',
         '.tt-head::before{content:"✨";position:absolute;top:8px;left:50%;font-size:12px;animation:ttKittySparkle 2s infinite;color:#FFF}',
         '.tt-head::after{content:"✨";position:absolute;bottom:4px;right:20px;font-size:10px;animation:ttKittySparkle 2.5s infinite .3s;color:#FFF}',
         '.tt-brand{display:flex;align-items:center;gap:9px;position:relative;z-index:1}',
 
-        // ★ LOGO - GIF hoặc emoji nhảy, hiện 100%
         '.tt-rose{font-size:0 !important;width:44px;height:44px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 30% 30%,#FFE4F0,#F48FB1 80%);border-radius:50%;animation:ttKittyDance 0.6s ease-in-out infinite;filter:drop-shadow(0 3px 6px rgba(233,30,99,.6));position:relative;overflow:hidden}',
-        '.tt-rose::after{content:"🐱";font-size:32px;line-height:1;position:absolute;animation:ttKittyDance 0.6s ease-in-out infinite}',
-        '.tt-rose img{width:100%;height:100%;object-fit:contain;position:absolute;z-index:2;border-radius:50%}',
+        '.tt-rose::after{content:"";font-size:32px;line-height:1;position:absolute;animation:ttKittyDance 0.6s ease-in-out infinite}',
+        '.tt-rose img{width:100%;height:100%;object-fit:cover;position:absolute;z-index:2;border-radius:50%}',
         '.tt-title-main{font-size:12.5px;font-weight:900;color:#FFF;letter-spacing:.5px;line-height:1.15;text-shadow:0 1px 2px rgba(0,0,0,.2)}',
         '.tt-title-main .rose-mark{color:#FFF;animation:ttKittyFloat 1.8s ease-in-out infinite;display:inline-block}',
         '.tt-title-sub{font-size:7.5px;letter-spacing:2px;font-weight:800;margin-top:2px;color:#FCE4EC;text-transform:uppercase;text-shadow:0 1px 1px rgba(0,0,0,.15)}',
@@ -449,35 +447,24 @@
         '.tt-icon-btn{width:20px;height:20px;border-radius:50%;border:1.8px solid rgba(255,255,255,.75);background:rgba(255,255,255,.25);color:#FFF;font-size:11px;font-weight:900;line-height:1;padding:0;cursor:pointer;transition:all .2s}',
         '.tt-icon-btn:hover{background:rgba(255,255,255,.5);transform:scale(1.1) rotate(90deg)}',
 
-        // ★ BODY
         '.tt-body{padding:9px;overflow-y:auto;flex:1;display:grid;grid-template-columns:1fr 1fr;gap:7px;background:transparent;-webkit-overflow-scrolling:touch}',
         '.tt-body::-webkit-scrollbar{width:5px}',
         '.tt-body::-webkit-scrollbar-thumb{background:linear-gradient(#F48FB1,#E91E63);border-radius:3px}',
         '.tt-body::-webkit-scrollbar-track{background:rgba(252,228,236,.5);border-radius:3px}',
         '.tt-body .tt-full{grid-column:1/-1}',
-
-        // ★ STATUS - shimmer
         '.tt-status{grid-column:1/-1;background:#FFFFFF;border-radius:12px;padding:8px 13px;border-left:5px solid #E91E63;font-size:10.5px;font-weight:800;color:#AD1457;text-align:center;letter-spacing:.2px;box-shadow:0 2px 6px rgba(233,30,99,.15);position:relative;overflow:hidden;animation:ttSectionFadeIn .4s ease-out}',
         '.tt-status::after{content:"";position:absolute;top:0;left:-200%;width:200%;height:100%;background:linear-gradient(90deg,transparent,rgba(244,143,177,.5),transparent);animation:ttTimerShine 3s infinite}',
-
-        // ★ SECTION - fade in + hover
         '.tt-section{background:rgba(255,255,255,.96);border-radius:13px;padding:8px;border:1.5px solid #F8BBD0;box-shadow:0 2px 6px rgba(233,30,99,.1);position:relative;animation:ttSectionFadeIn .5s ease-out;transition:transform .2s ease,box-shadow .2s ease}',
         '.tt-section:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(233,30,99,.2)}',
         '.tt-section:nth-child(2){animation-delay:.05s}',
         '.tt-section:nth-child(3){animation-delay:.1s}',
         '.tt-section:nth-child(4){animation-delay:.15s}',
-
         '.tt-section-title{font-size:9px;font-weight:900;letter-spacing:1px;margin-bottom:6px;color:#D81B60;text-transform:uppercase;display:flex;align-items:center;gap:5px}',
         '.tt-section-title .r{font-size:12px;animation:ttKittyFloat 2s infinite}',
-
-        // ★ INPUT
         '.tt-input{padding:8px 10px;border:2px solid #F8BBD0;border-radius:10px;font-family:inherit;font-size:10px;color:#AD1457;background:#FFF;outline:none;width:100%;transition:all .2s}',
         '.tt-input::placeholder{color:#F48FB1;font-style:italic}',
         '.tt-input:focus{border-color:#E91E63;box-shadow:0 0 0 3px rgba(233,30,99,.18);background:#FFF0F5}',
-
         '.tt-row{display:flex;gap:6px;align-items:center}',
-
-        // ★ BUTTON - wobble on hover
         '.tt-btn{padding:8px 11px;border:none;border-radius:10px;font-weight:900;font-size:9.5px;cursor:pointer;color:#FFF;background:linear-gradient(135deg,#F48FB1,#E91E63);font-family:inherit;white-space:nowrap;flex-shrink:0;text-transform:uppercase;letter-spacing:.4px;box-shadow:0 3px 8px rgba(233,30,99,.3);-webkit-tap-highlight-color:transparent;transition:all .15s;position:relative;overflow:hidden}',
         '.tt-btn::before{content:"";position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.6),transparent);transition:left .4s}',
         '.tt-btn:hover::before{left:100%}',
@@ -486,8 +473,6 @@
         '.tt-btn.gray{background:linear-gradient(135deg,#CE93D8,#8E24AA)}',
         '.tt-btn.gold{background:linear-gradient(135deg,#FF80AB,#EC407A)}',
         '.tt-btn.blue{background:linear-gradient(135deg,#F06292,#D81B60)}',
-
-        // ★ DOMAIN LIST
         '.tt-domain-list{max-height:60px;overflow-y:auto;margin-top:6px;border-radius:10px;background:rgba(255,240,245,.7);padding:5px;border:1.5px dashed #F48FB1}',
         '.tt-domain-list::-webkit-scrollbar{width:4px}',
         '.tt-domain-list::-webkit-scrollbar-thumb{background:linear-gradient(#F48FB1,#E91E63);border-radius:2px}',
@@ -500,14 +485,12 @@
         '.tt-domain-item .d-del:hover{transform:scale(1.15) rotate(90deg)}',
         '.tt-empty{text-align:center;color:#F48FB1;font-size:8px;padding:6px;font-style:italic}',
 
-        // ★ TIMER - ĐẸP HƠN, TO HƠN, PHÁT SÁNG
         '.tt-timer{display:none;grid-column:1/-1;padding:11px 13px;background:linear-gradient(135deg,#FFF,#FFF0F5 50%,#FFE4F0 100%);background-size:200% 200%;border-radius:16px;border:3px solid transparent;background-clip:padding-box;align-items:center;justify-content:center;gap:12px;position:relative;animation:ttSectionFadeIn .5s ease-out}',
         '.tt-timer.show{display:flex;animation:ttTimerPulse 2s ease-in-out infinite}',
         '.tt-timer::before{content:"";position:absolute;inset:-3px;border-radius:16px;background:linear-gradient(135deg,#F48FB1,#E91E63,#FF80AB,#F48FB1);background-size:200% 200%;z-index:-1;animation:ttHeaderFlow 3s ease-in-out infinite}',
         '.tt-timer::after{content:"";position:absolute;top:0;left:-200%;width:200%;height:100%;border-radius:16px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent);animation:ttTimerShine 3s infinite}',
-
-        // ★ KITTY trong timer - EMOJI nhảy (chắc chắn hiện)
-        '.tt-kitty-emoji{width:56px;height:56px;flex-shrink:0;font-size:44px;line-height:56px;text-align:center;animation:ttKittyDance 0.6s ease-in-out infinite;transform-origin:bottom center;filter:drop-shadow(0 4px 8px rgba(233,30,99,.7));background:radial-gradient(circle at 30% 30%,#FFE4F0,#F48FB1);border-radius:50%;border:3px solid #FFF;box-shadow:0 4px 12px rgba(233,30,99,.4);position:relative;z-index:1}',
+        '.tt-kitty-emoji{width:56px;height:56px;flex-shrink:0;font-size:44px;line-height:56px;text-align:center;animation:ttKittyDance 0.6s ease-in-out infinite;transform-origin:bottom center;filter:drop-shadow(0 4px 8px rgba(233,30,99,.7));background:radial-gradient(circle at 30% 30%,#FFE4F0,#F48FB1);border-radius:50%;border:3px solid #FFF;box-shadow:0 4px 12px rgba(233,30,99,.4);position:relative;z-index:1;overflow:hidden}',
+        '.tt-kitty-emoji img{width:100%;height:100%;object-fit:cover;border-radius:50%}',
 
         '.tt-timer-wrap{position:relative;width:56px;height:56px;flex-shrink:0;z-index:1}',
         '.tt-timer-wrap svg{width:100%;height:100%;transform:rotate(-90deg);filter:drop-shadow(0 2px 4px rgba(233,30,99,.3))}',
@@ -516,40 +499,31 @@
         '.tt-timer-num{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;color:#E91E63;text-shadow:0 2px 4px rgba(255,255,255,.9),0 0 8px rgba(255,20,147,.3)}',
         '.tt-timer-cap{font-size:9.5px;font-weight:800;color:#D81B60;line-height:1.4;text-align:left;flex:1;z-index:1;text-shadow:0 1px 2px rgba(255,255,255,.8);animation:ttKittyGlow 2s ease-in-out infinite}',
 
-        // ★ GUIDE / CODE
         '.tt-guide{display:none;grid-column:1/-1;background:linear-gradient(135deg,rgba(255,240,245,.95),rgba(252,228,236,.95));border:2px solid #F8BBD0;border-radius:12px;padding:8px 11px;text-align:center;font-size:9px;color:#AD1457;line-height:1.45;position:relative;overflow:hidden;animation:ttSectionFadeIn .4s ease-out}',
         '.tt-guide.show{display:block}',
         '.tt-guide b{color:#E91E63;font-weight:900}',
-
         '.tt-code{display:none;grid-column:1/-1;background:linear-gradient(135deg,#FFF,#FFF0F5);border:2.5px dashed #F48FB1;border-radius:14px;padding:10px 11px;position:relative;animation:ttSectionFadeIn .4s ease-out}',
         '.tt-code.show{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:center}',
         '.tt-code-label{font-size:8px;font-weight:900;letter-spacing:1.8px;color:#D81B60;text-transform:uppercase;text-align:center}',
         '.tt-code-label .r{display:block;font-size:15px;color:#E91E63;margin-bottom:3px;animation:ttKittyFloat 1.5s infinite}',
         '.tt-code-right{display:flex;flex-direction:column;gap:5px}',
         '.tt-code-value{font-family:"Courier New",monospace;font-size:16px;font-weight:900;color:#AD1457;letter-spacing:3.5px;padding:8px 11px;background:linear-gradient(135deg,#FFF0F5,#FCE4EC);border-radius:9px;word-break:break-all;user-select:text;border:2px solid #F48FB1;text-align:center;text-shadow:0 1px 1px rgba(255,255,255,.9);box-shadow:inset 0 1px 3px rgba(233,30,99,.15)}',
-
-        // ★ FOOTER
         '.tt-foot{display:flex;justify-content:center;align-items:center;gap:6px;padding:7px;color:#FFF;font-size:8px;font-weight:800;letter-spacing:1.3px;background:linear-gradient(135deg,#E91E63,#F48FB1);border-radius:0 0 17px 17px;overflow:hidden;position:relative}',
         '.tt-foot::before{content:"";position:absolute;top:0;left:-200%;width:200%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent);animation:ttTimerShine 4s infinite}',
         '.tt-foot .r{color:#FFF;font-size:12px;animation:ttKittyFloat 1.6s infinite}',
         '.tt-foot .w{color:#FFF;font-size:9px;letter-spacing:2px;text-shadow:0 1px 1px rgba(0,0,0,.2)}',
         '.tt-foot .vn{color:#FFF;font-size:10px;letter-spacing:1.5px;text-shadow:0 1px 1px rgba(0,0,0,.2)}',
-
         '.tt-hint{font-size:7.5px;color:#F06292;font-style:italic;margin-top:4px;display:block;line-height:1.3}',
 
-        // ★ FAB - LOGO khi tắt = EMOJI nhảy
         '#tt-fab{position:fixed;bottom:16px;right:16px;z-index:2147483647;width:64px;height:64px;border-radius:50%;cursor:pointer;color:#FFF;display:flex;align-items:center;justify-content:center;font-size:0;background:radial-gradient(circle at 30% 30%,#FFD9E8,#FF69B4 70%);border:3px solid #FFF;box-shadow:0 6px 18px rgba(233,30,99,.55);animation:ttKittyPulse 2s infinite;overflow:hidden;padding:0;transition:transform .2s}',
         '#tt-fab:hover{transform:scale(1.1) rotate(8deg)}',
+        '#tt-fab img{width:100%;height:100%;object-fit:cover;border-radius:50%;pointer-events:none;animation:ttKittyDance 0.6s ease-in-out infinite}',
         '#tt-fab .tt-fab-emoji{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:44px;line-height:1;animation:ttKittyDance 0.6s ease-in-out infinite;pointer-events:none}',
 
-        // ★ TOAST
         '#tt-toast{position:fixed;top:60px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#E91E63,#F48FB1);color:#FFF;padding:10px 20px;border-radius:22px;font-family:"Comic Sans MS","Segoe UI",Arial,sans-serif;font-size:11px;font-weight:800;z-index:2147483647;border:2.5px solid #FFF;pointer-events:none;letter-spacing:.6px;max-width:calc(100vw - 32px);text-align:center;box-shadow:0 6px 20px rgba(233,30,99,.5);animation:ttKittyFloat 1.5s infinite}',
-
-        // ★ GIF OVERLAY
         '#tt-gif-overlay{position:fixed;inset:0;z-index:2147483647;background:rgba(233,30,99,.4);display:flex;align-items:center;justify-content:center;pointer-events:none;backdrop-filter:blur(3px)}',
         '#tt-gif-overlay img{max-width:70vw;max-height:70vh;border-radius:20px;box-shadow:0 0 60px rgba(244,143,177,.9),0 0 0 6px rgba(255,255,255,.8);animation:ttGifPop .5s ease-out}',
 
-        // ★ RESPONSIVE
         '@media (max-width:400px){',
         '  #tt-root{width:calc(100vw - 12px) !important;top:4px;font-size:9px;border-radius:16px}',
         '  .tt-head{padding:10px 12px}',
@@ -620,7 +594,7 @@
         if (!document.body) { var tries = 0; var w = setInterval(function() { tries++; if (document.body) { clearInterval(w); buildPanel(); } else if (tries > 200) { clearInterval(w); } }, 50); return; }
         var old = document.getElementById('tt-root'); if (old) old.remove();
         GM_addStyle(buildCSS());
-        var html = ['<div class="tt-head" id="tt-head">','  <div class="tt-head-actions">','    <button class="tt-icon-btn" id="tt-min">−</button>','    <button class="tt-icon-btn" id="tt-close">✕</button>','  </div>','  <div class="tt-brand">','    <div class="tt-rose" id="tt-logo"><img src="' + GIF_KITTY_DANCE + '" alt="🐱" onerror="this.style.display=\'none\';this.parentNode.style.backgroundImage=\'url(' + GIF_KITTY_DANCE_ALT + ')\';this.parentNode.style.backgroundSize=\'contain\';this.parentNode.style.backgroundRepeat=\'no-repeat\';this.parentNode.style.backgroundPosition=\'center\';" /></div>','    <div class="tt-brand-txt">','      <div class="tt-title-main">THANH TUẤN <span class="rose-mark">🎀</span></div>','      <div class="tt-title-sub">HELLO KITTY · v49.0.0</div>','    </div>','  </div>','</div>','<div class="tt-body">','  <div class="tt-status" id="tt-status">🎀 Sẵn sàng 🐱</div>','  <div class="tt-section">','    <div class="tt-section-title"><span class="r">🎀</span> DOMAIN ĐÍCH</div>','    <input class="tt-input" id="tt-domain-input" type="text" placeholder="vd: example.com" />','    <div class="tt-section-title" style="margin-top:5px"><span class="r">🐱</span> TỪ KHÓA SERVER</div>','    <input class="tt-input" id="tt-keyword-input" type="text" placeholder="để trống = dùng domain" />','    <span class="tt-hint">🎀 Click kết quả Google đầu tiên 🐱</span>','    <div class="tt-row" style="margin-top:5px;margin-bottom:0">','      <button class="tt-btn blue" id="tt-save-domain" style="flex:1">💾 LƯU</button>','      <button class="tt-btn gold" id="tt-start" style="flex:1">⚡ BẮT ĐẦU</button>','    </div>','    <div class="tt-domain-list" id="tt-domain-list"></div>','  </div>','  <div class="tt-section">','    <div class="tt-section-title"><span class="r">🎀</span> ĐIỀU KHIỂN</div>','    <button class="tt-btn gray" id="tt-reset" style="width:100%;padding:8px">🔄 RESET</button>','    <div class="tt-timer" id="tt-timer" style="margin-top:6px;margin-bottom:0">','      <div class="tt-kitty-emoji" id="tt-kitty-emoji">🐱</div>','      <div class="tt-timer-wrap">','        <svg viewBox="0 0 60 60">','          <defs>','            <linearGradient id="ttTimerGrad" x1="0%" y1="0%" x2="100%" y2="100%">','              <stop offset="0%" stop-color="#F48FB1"/>','              <stop offset="50%" stop-color="#E91E63"/>','              <stop offset="100%" stop-color="#FF80AB"/>','            </linearGradient>','          </defs>','          <circle class="tt-timer-track" cx="30" cy="30" r="26"/>','          <circle class="tt-timer-prog" id="tt-timer-prog" cx="30" cy="30" r="26"/>','        </svg>','        <div class="tt-timer-num" id="tt-timer-num">0</div>','      </div>','      <div class="tt-timer-cap" id="tt-timer-cap">ĐANG CHỜ</div>','    </div>','  </div>','  <div class="tt-section tt-full">','    <div class="tt-section-title"><span class="r">🐱</span> KEYWORD → DOMAIN MAP</div>','    <input class="tt-input" id="tt-kw-input" type="text" placeholder="keyword (vd: Sunwin)" style="margin-bottom:5px" />','    <input class="tt-input" id="tt-kw-domain" type="text" placeholder="domain (vd: sunwin.com)" style="margin-bottom:5px" />','    <div class="tt-row">','      <button class="tt-btn blue" id="tt-kw-save" style="flex:1">💾 LƯU MAP</button>','      <button class="tt-btn gold" id="tt-kw-auto" style="flex:1">⚡ QUÉT + AUTO</button>','    </div>','    <div class="tt-domain-list" id="tt-kw-list"></div>','  </div>','  <div class="tt-guide tt-full" id="tt-guide"></div>','  <div class="tt-code" id="tt-code">','    <div class="tt-code-label"><span class="r">🎀</span>MÃ</div>','    <div class="tt-code-right">','      <div class="tt-code-value" id="tt-code-value">----</div>','      <button class="tt-btn gold" id="tt-copy-btn" style="width:100%;padding:7px;font-size:9px">📋 COPY</button>','    </div>','  </div>','</div>','<div class="tt-foot">','  <span class="r">🎀</span>','  <span class="w">(c) THANHTUAN</span>','  <span class="vn">🐱 HELLO KITTY 🐱</span>','  <span class="r">🎀</span>','</div>'].join('');
+        var html = ['<div class="tt-head" id="tt-head">','  <div class="tt-head-actions">','    <button class="tt-icon-btn" id="tt-min">−</button>','    <button class="tt-icon-btn" id="tt-close">✕</button>','  </div>','  <div class="tt-brand">','    <div class="tt-rose" id="tt-logo"><img src="' + GIF_MAIN + '" alt="Logo" onerror="this.src=\'' + GIF_MAIN_FALLBACK + '\';" /></div>','    <div class="tt-brand-txt">','      <div class="tt-title-main">THANH TUẤN <span class="rose-mark">🎀</span></div>','      <div class="tt-title-sub">HELLO KITTY · v49.2.0</div>','    </div>','  </div>','</div>','<div class="tt-body">','  <div class="tt-status" id="tt-status">🎀 Sẵn sàng 🐱</div>','  <div class="tt-section">','    <div class="tt-section-title"><span class="r">🎀</span> DOMAIN ĐÍCH</div>','    <input class="tt-input" id="tt-domain-input" type="text" placeholder="vd: example.com" />','    <div class="tt-section-title" style="margin-top:5px"><span class="r">🐱</span> TỪ KHÓA SERVER</div>','    <input class="tt-input" id="tt-keyword-input" type="text" placeholder="để trống = dùng domain" />','    <span class="tt-hint">🎀 Click kết quả Google đầu tiên 🐱</span>','    <div class="tt-row" style="margin-top:5px;margin-bottom:0">','      <button class="tt-btn blue" id="tt-save-domain" style="flex:1">💾 LƯU</button>','      <button class="tt-btn gold" id="tt-start" style="flex:1">⚡ BẮT ĐẦU</button>','    </div>','    <div class="tt-domain-list" id="tt-domain-list"></div>','  </div>','  <div class="tt-section">','    <div class="tt-section-title"><span class="r">🎀</span> ĐIỀU KHIỂN</div>','    <button class="tt-btn gray" id="tt-reset" style="width:100%;padding:8px">🔄 RESET</button>','    <div class="tt-timer" id="tt-timer" style="margin-top:6px;margin-bottom:0">','      <div class="tt-kitty-emoji" id="tt-kitty-emoji"><img src="' + GIF_MAIN + '" alt="Kitty" onerror="this.style.display=\'none\';this.parentNode.textContent=\'🐱\';" /></div>','      <div class="tt-timer-wrap">','        <svg viewBox="0 0 60 60">','          <defs>','            <linearGradient id="ttTimerGrad" x1="0%" y1="0%" x2="100%" y2="100%">','              <stop offset="0%" stop-color="#F48FB1"/>','              <stop offset="50%" stop-color="#E91E63"/>','              <stop offset="100%" stop-color="#FF80AB"/>','            </linearGradient>','          </defs>','          <circle class="tt-timer-track" cx="30" cy="30" r="26"/>','          <circle class="tt-timer-prog" id="tt-timer-prog" cx="30" cy="30" r="26"/>','        </svg>','        <div class="tt-timer-num" id="tt-timer-num">0</div>','      </div>','      <div class="tt-timer-cap" id="tt-timer-cap">ĐANG CHỜ</div>','    </div>','  </div>','  <div class="tt-section tt-full">','    <div class="tt-section-title"><span class="r">🐱</span> KEYWORD → DOMAIN MAP</div>','    <input class="tt-input" id="tt-kw-input" type="text" placeholder="keyword (vd: Sunwin)" style="margin-bottom:5px" />','    <input class="tt-input" id="tt-kw-domain" type="text" placeholder="domain (vd: sunwin.com)" style="margin-bottom:5px" />','    <div class="tt-row">','      <button class="tt-btn blue" id="tt-kw-save" style="flex:1">💾 LƯU MAP</button>','      <button class="tt-btn gold" id="tt-kw-auto" style="flex:1">⚡ QUÉT + AUTO</button>','    </div>','    <div class="tt-domain-list" id="tt-kw-list"></div>','  </div>','  <div class="tt-guide tt-full" id="tt-guide"></div>','  <div class="tt-code" id="tt-code">','    <div class="tt-code-label"><span class="r">🎀</span>MÃ</div>','    <div class="tt-code-right">','      <div class="tt-code-value" id="tt-code-value">----</div>','      <button class="tt-btn gold" id="tt-copy-btn" style="width:100%;padding:7px;font-size:9px">📋 COPY</button>','    </div>','  </div>','</div>','<div class="tt-foot">','  <span class="r">🎀</span>','  <span class="w">(c) THANHTUAN</span>','  <span class="vn">🐱 HELLO KITTY 🐱</span>','  <span class="r">🎀</span>','</div>'].join('');
         var root = document.createElement('div'); root.id = 'tt-root'; root.innerHTML = html; document.body.appendChild(root);
         UI = { root: root, head: root.querySelector('#tt-head'), status: root.querySelector('#tt-status'), timer: root.querySelector('#tt-timer'), timerNum: root.querySelector('#tt-timer-num'), timerProg: root.querySelector('#tt-timer-prog'), timerCap: root.querySelector('#tt-timer-cap'), kittyEmoji: root.querySelector('#tt-kitty-emoji'), guide: root.querySelector('#tt-guide'), code: root.querySelector('#tt-code'), codeVal: root.querySelector('#tt-code-value'), copyBtn: root.querySelector('#tt-copy-btn'), minBtn: root.querySelector('#tt-min'), closeBtn: root.querySelector('#tt-close'), logo: root.querySelector('#tt-logo'), domainInput: root.querySelector('#tt-domain-input'), keywordInput: root.querySelector('#tt-keyword-input'), saveBtn: root.querySelector('#tt-save-domain'), startBtn: root.querySelector('#tt-start'), domainList: root.querySelector('#tt-domain-list'), resetBtn: root.querySelector('#tt-reset'), kwInput: root.querySelector('#tt-kw-input'), kwDomain: root.querySelector('#tt-kw-domain'), kwSaveBtn: root.querySelector('#tt-kw-save'), kwAutoBtn: root.querySelector('#tt-kw-auto'), kwList: root.querySelector('#tt-kw-list') };
         if (UI.domainList) UI.domainList.addEventListener('click', onDomainListClick);
@@ -661,7 +635,7 @@
                 if (!fab) {
                     fab = document.createElement('div');
                     fab.id = 'tt-fab';
-                    fab.innerHTML = '<div class="tt-fab-emoji">🐱</div>';
+                    fab.innerHTML = '<img src="' + LOGO_URL + '" alt="Logo" onerror="this.style.display=\'none\';this.parentNode.innerHTML=\'<div class=&quot;tt-fab-emoji&quot;>🐱</div>\';" />';
                     fab.onclick = function(){ UI.root.style.display = ''; fab.remove(); };
                     document.body.appendChild(fab);
                 }
@@ -727,7 +701,8 @@
         if (cb) { DICHVU_LOCK.lockCreate(); DICHVU_URLS.add(curUrl); S.set('dichvuStage', 'clicked_create'); S.set('dichvuClickAt', Date.now().toString()); dichvuCreateClicked = true; dichvuLastCreateAt = Date.now(); setTimeout(function() { dichvuSafeClickOnce(cb); }, 200); }
         return Promise.resolve();
     }
-    function findGtrafficCard() {
+
+// >>> TIẾP TỤC Ở PHẦN 2B/3 <<<    function findGtrafficCard() {
         var grid = document.getElementById('linkGrid');
         if (!grid) return null;
         var allCards = grid.querySelectorAll('*');
@@ -1072,7 +1047,8 @@
         if (pollChildTimer) { clearInterval(pollChildTimer); pollChildTimer = null; }
         startWaitingForGetLink();
     }
-    function fillAndConfirm(force) {
+
+// >>> TIẾP TỤC Ở PHẦN 2C/3 <<<    function fillAndConfirm(force) {
         if (!IS_TOP || !isGtraffic) return false;
         if (S.get('pendingAutoReset') === '1') return false;
         if (S.get('hardStop') === '1') return false;
